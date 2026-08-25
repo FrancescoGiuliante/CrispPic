@@ -1,18 +1,15 @@
 import Link from "next/link";
-import { SITE_NAME } from "@/lib/constants";
+import { Logo } from "@/components/layout/Logo";
 
 export function Header() {
   return (
-    <header className="w-full border-b border-black/5 dark:border-white/10">
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-200/70 bg-white/75 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
-        <Link
-          href="/"
-          className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
-        >
-          {SITE_NAME}
+        <Link href="/" className="transition-opacity hover:opacity-80">
+          <Logo />
         </Link>
-        <nav className="flex items-center gap-6 text-sm text-zinc-600 dark:text-zinc-400">
-          <Link href="/faq" className="hover:text-zinc-900 dark:hover:text-zinc-50">
+        <nav className="flex items-center gap-6 text-sm font-medium text-zinc-600">
+          <Link href="/faq" className="transition-colors hover:text-zinc-900">
             FAQ
           </Link>
         </nav>

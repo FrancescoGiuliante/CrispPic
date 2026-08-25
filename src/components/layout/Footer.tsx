@@ -1,33 +1,61 @@
 import Link from "next/link";
-import { SITE_NAME } from "@/lib/constants";
+import { Logo } from "@/components/layout/Logo";
+import { SITE_TAGLINE } from "@/lib/constants";
 
-const links = [
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-  { href: "/contact", label: "Contact" },
+const columns = [
+  {
+    heading: "Product",
+    links: [{ href: "/", label: "Image compressor" }],
+  },
+  {
+    heading: "Company",
+    links: [
+      { href: "/about", label: "About" },
+      { href: "/contact", label: "Contact" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
+      { href: "/faq", label: "FAQ" },
+    ],
+  },
 ];
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-black/5 dark:border-white/10">
-      <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-4 px-6 py-10 text-sm text-zinc-500 sm:flex-row sm:justify-between dark:text-zinc-500">
-        <p>
-          © {new Date().getFullYear()} {SITE_NAME}. All processing happens in
-          your browser.
-        </p>
-        <nav className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="hover:text-zinc-800 dark:hover:text-zinc-300"
-            >
-              {link.label}
-            </Link>
+    <footer className="w-full border-t border-zinc-200/70">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-14 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <Logo />
+          <p className="max-w-[220px] text-sm text-zinc-500">
+            {SITE_TAGLINE}
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+          {columns.map((column) => (
+            <div key={column.heading} className="flex flex-col gap-3">
+              <span className="text-xs font-semibold tracking-wide text-zinc-400 uppercase">
+                {column.heading}
+              </span>
+              {column.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-zinc-600 transition-colors hover:text-zinc-900"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           ))}
-        </nav>
+        </div>
+      </div>
+      <div className="border-t border-zinc-200/70 px-6 py-6 text-center text-xs text-zinc-400">
+        © {new Date().getFullYear()} FitMyFile. All processing happens in
+        your browser.
       </div>
     </footer>
   );
