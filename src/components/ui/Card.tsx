@@ -3,14 +3,18 @@ import { cn } from "@/lib/utils";
 export function Card({
   children,
   className,
+  interactive,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** Adds hover elevation — only for cards that are actually clickable. */
+  interactive?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]",
+        "rounded-2xl border border-line bg-surface p-6 shadow-sm",
+        interactive && "transition-shadow duration-200 hover:shadow-md",
         className
       )}
     >

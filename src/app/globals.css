@@ -1,23 +1,354 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Design tokens
+   --------------------------------------------------------------------------
+   Every color in the product resolves to one of the semantic tokens below —
+   components never reference a raw palette value. That is what makes the
+   dark theme a ~40-line override instead of a rewrite: the same component
+   markup reads `bg-surface` / `text-fg-muted` in both themes.
+
+   Naming: `bg` (page canvas) < `surface` (raised card) < `elevated` (popover,
+   modal). `subtle` is the recessed fill used for inputs, chips and wells.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #18181b;
+  color-scheme: light;
+
+  /* Canvas & surfaces */
+  --bg: #fbfbfd;
+  --bg-accent: #f5f5fa;
+  --surface: #ffffff;
+  --elevated: #ffffff;
+  --subtle: #f4f4f6;
+  --subtle-hover: #eaeaee;
+
+  /* Text */
+  --fg: #131316;
+  --fg-secondary: #52525b;
+  --fg-muted: #8b8b95;
+  --fg-faint: #b4b4bd;
+
+  /* Lines */
+  --line: #e6e6ea;
+  --line-strong: #d4d4d9;
+
+  /* Brand */
   --accent: #4f46e5;
-  --accent-foreground: #ffffff;
+  --accent-hover: #4338ca;
+  --accent-active: #3730a3;
+  --accent-fg: #ffffff;
+  --accent-soft: #eef2ff;
+  --accent-soft-hover: #e0e7ff;
+  --accent-ring: rgb(79 70 229 / 0.35);
+
+  /* The wordmark's own color — deliberately its own token rather than an
+     alias for --accent. It is fixed brand indigo in light mode (not the
+     slightly lighter shade --accent takes in dark mode, so the mark itself
+     doesn't shift value) and flips to solid white in dark mode, where
+     indigo-on-near-black reads muddier than white does. */
+  --logo: #4f46e5;
+
+  /* Status */
+  --success: #059669;
+  --success-soft: #ecfdf5;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+
+  /* Elevation — deliberately soft and layered rather than one big blur. */
+  --shadow-xs: 0 1px 2px rgb(16 16 20 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(16 16 20 / 0.05), 0 1px 3px rgb(16 16 20 / 0.04);
+  --shadow-md: 0 2px 4px rgb(16 16 20 / 0.04), 0 6px 16px rgb(16 16 20 / 0.07);
+  --shadow-lg: 0 4px 8px rgb(16 16 20 / 0.04), 0 16px 40px rgb(16 16 20 / 0.1);
+  --shadow-accent: 0 1px 2px rgb(79 70 229 / 0.2), 0 4px 14px rgb(79 70 229 / 0.22);
+
+  /* The checkerboard behind transparent images. */
+  --checker-a: #ffffff;
+  --checker-b: #ececf0;
+
+  /* Motion. `--ease-out` is the workhorse; `--ease-spring` overshoots
+     slightly and is reserved for things that "arrive" (popovers, badges). */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 130ms;
+  --dur: 200ms;
+  --dur-slow: 340ms;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0b0b0f;
+  --bg-accent: #101017;
+  --surface: #141419;
+  --elevated: #1b1b22;
+  --subtle: #1e1e25;
+  --subtle-hover: #26262f;
+
+  --fg: #f4f4f6;
+  --fg-secondary: #a9a9b4;
+  --fg-muted: #7b7b87;
+  --fg-faint: #5a5a66;
+
+  --line: #26262e;
+  --line-strong: #34343e;
+
+  --accent: #6366f1;
+  --accent-hover: #7679f5;
+  --accent-active: #818cf8;
+  --accent-fg: #ffffff;
+  --accent-soft: #1c1c33;
+  --accent-soft-hover: #232343;
+  --accent-ring: rgb(129 140 248 / 0.45);
+
+  --logo: #ffffff;
+
+  --success: #34d399;
+  --success-soft: #072a20;
+  --warning: #fbbf24;
+  --warning-soft: #2a1e05;
+  --danger: #f87171;
+  --danger-soft: #2c1113;
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45), 0 1px 3px rgb(0 0 0 / 0.35);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.4), 0 6px 16px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.55);
+  --shadow-accent: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 14px rgb(99 102 241 / 0.35);
+
+  --checker-a: #1a1a20;
+  --checker-b: #101015;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-bg-accent: var(--bg-accent);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-subtle: var(--subtle);
+  --color-subtle-hover: var(--subtle-hover);
+
+  --color-fg: var(--fg);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
   --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-hover: var(--accent-soft-hover);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-accent: var(--shadow-accent);
+
+  --ease-out: var(--ease-out);
+  --ease-spring: var(--ease-spring);
+  /* --font-sans is already set by next/font's `variable: "--font-sans"` on <html>. */
 }
 
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--fg);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tailwind v4 does not default `border-color` to a themed value; without
+   this every themed border would need an explicit color utility. */
+*,
+::before,
+::after {
+  border-color: var(--line);
+}
+
+/* One focus treatment for the whole app: a 2px accent ring offset from the
+   element, only for keyboard users. Components opt out only when they draw
+   their own (e.g. the compare-slider handle). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft-hover);
+  color: var(--fg);
+}
+
+/* Native number inputs: the spinner arrows are noise in this design and
+   steal horizontal space inside the narrow chip inputs. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* Thin, theme-aware scrollbars for the few panes that do scroll. */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 99px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+/* Alpha checkerboard, so a transparent PNG reads as transparent instead of
+   as "white" — which matters when the user is deciding whether converting
+   to JPG will cost them the alpha channel. */
+.bg-checker {
+  background-color: var(--checker-a);
+  background-image:
+    linear-gradient(45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-b) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-b) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Swap-not-recompute theming for the logo icon: two raster PNGs (indigo,
+   white) stacked in the same spot in Logo.tsx; only one is ever visible.
+   A fixed-color raster can't shift hue via CSS the way `--logo` does for
+   the text half of the mark, so this is the raster equivalent of that
+   token swap. */
+.logo-icon-dark {
+  display: none;
+}
+:root[data-theme="dark"] .logo-icon-light {
+  display: none;
+}
+:root[data-theme="dark"] .logo-icon-dark {
+  display: block;
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes soft-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 var(--accent-ring); }
+  100% { box-shadow: 0 0 0 16px rgb(79 70 229 / 0); }
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@keyframes indeterminate {
+  0% { transform: translateX(-100%) scaleX(0.4); }
+  50% { transform: translateX(20%) scaleX(0.7); }
+  100% { transform: translateX(140%) scaleX(0.4); }
+}
+
+.animate-fade-in { animation: fade-in var(--dur) var(--ease-out) both; }
+.animate-rise-in { animation: rise-in var(--dur-slow) var(--ease-out) both; }
+.animate-scale-in { animation: scale-in 220ms var(--ease-out) both; }
+.animate-pop { animation: pop 420ms var(--ease-spring) both; }
+.animate-toast-in { animation: toast-in 260ms var(--ease-spring) both; }
+.animate-soft-float { animation: soft-float 3.2s var(--ease-in-out) infinite; }
+.animate-ring-pulse { animation: ring-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-indeterminate { animation: indeterminate 1.4s var(--ease-in-out) infinite; }
+
+/* Staggered entrance for lists — set `--i` on each child. */
+.stagger > * {
+  animation: rise-in 420ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--subtle) 25%, var(--subtle-hover) 50%, var(--subtle) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* ==========================================================================
+   Reduced motion — honour the OS setting everywhere, including the
+   library-driven transitions we do not own.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .stagger > * {
+    animation-delay: 0ms !important;
+  }
 }

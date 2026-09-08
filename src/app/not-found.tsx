@@ -1,19 +1,15 @@
-import { Button } from "@/components/ui/Button";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { NotFoundContent } from "@/components/layout/NotFoundContent";
 
+// Rendered outside both the (tool) and (content) route groups, so it brings
+// its own Header/Footer rather than inheriting one.
 export default function NotFound() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-32 text-center">
-      <p className="text-sm font-medium text-zinc-500">404</p>
-      <h1 className="text-2xl font-semibold text-zinc-900">
-        This page doesn&apos;t exist.
-      </h1>
-      <p className="max-w-sm text-zinc-600">
-        The tool or page you&apos;re looking for may have moved, or the link
-        might be broken.
-      </p>
-      <Button href="/" className="mt-2">
-        Back to home
-      </Button>
+    <div className="flex min-h-full flex-col">
+      <Header />
+      <NotFoundContent />
+      <Footer />
     </div>
   );
 }
