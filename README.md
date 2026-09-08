@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CrispPic
 
-## Getting Started
+Make your image fit the requirement — compress to an exact size, resize, crop, or convert format. 100% client-side: nothing is ever uploaded to a server.
 
-First, run the development server:
+**[crisppic.com](https://crisppic.com)**
+
+## What it does
+
+- **Compress to size** — target an exact file size (20 KB–1 MB or custom) via binary-search quality + progressive downscale.
+- **Resize** — by pixels or percentage, with aspect-ratio lock and common presets.
+- **Crop** — free or fixed ratios (1:1, 4:3, 3:4, 16:9, 9:16, custom).
+- **Convert** — JPG, PNG, WebP, with automatic HEIC/HEIF decoding for iPhone photos.
+- All of the above compose in a single pass (e.g. "JPG, 1080×1080, under 200 KB" is one operation, not four).
+- 16 languages, light/dark theme, and 12 statically generated SEO landing pages for common size/format/dimension searches.
+
+## Why it's private
+
+Every operation runs in the browser via the Canvas API, offloaded to a Web Worker (`OffscreenCanvas`) with an automatic main-thread fallback. No backend, no image ever leaves the device, no account.
+
+## Stack
+
+Next.js (App Router) · React · TypeScript · Tailwind CSS v4
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build   # production build
+npm run lint    # eslint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project layout
 
-## Learn More
+```
+src/
+  app/                  routes (App Router), incl. [slug] for SEO landings
+  components/
+    tool/               ImageTool, RequirementsPanel, CropModal, ...
+    layout/              Header, Footer, legal pages, ...
+  i18n/                 LanguageProvider + one dictionary per locale
+  lib/
+    image/              processing engine (worker + main-thread fallback)
+    tools/registry.ts   data-driven SEO landing pages
+```
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT — see [LICENSE](LICENSE).
