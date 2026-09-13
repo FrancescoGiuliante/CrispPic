@@ -7,6 +7,7 @@ import { CookieBanner } from "@/components/consent/CookieBanner";
 import { THEME_INIT_SCRIPT, ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
+import { ADSENSE_ACCOUNT } from "@/lib/ads";
 import { SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
 import { organizationJsonLd, softwareApplicationJsonLd } from "@/lib/seo";
 import "./globals.css";
@@ -75,6 +76,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           their own <script> tags into <head> before React hydrates, which
           shifts the children and produces a spurious mismatch. */}
       <head suppressHydrationWarning>
+        {/* Unconditional, unlike the real ad loader in AdSenseScript.tsx —
+            Google's site-verification crawler never clicks the cookie
+            consent banner, so this proof-of-ownership tag has to be present
+            on every request regardless of consent state. */}
+        <meta name="google-adsense-account" content={ADSENSE_ACCOUNT} />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script
           type="application/ld+json"
