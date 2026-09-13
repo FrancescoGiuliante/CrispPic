@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { ConsentProvider } from "@/components/consent/ConsentProvider";
 import { ConsentedScripts } from "@/components/consent/ConsentedScripts";
 import { CookieBanner } from "@/components/consent/CookieBanner";
@@ -96,6 +97,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </ToastProvider>
           </LanguageProvider>
         </ThemeProvider>
+        {/* Cookieless — no persistent identifier, no cross-site tracking —
+            so it sits outside the consent gate that guards GA/AdSense above.
+            Counts page views only once "Enable" is clicked in the Vercel
+            dashboard; until then this renders nothing. */}
+        <Analytics />
       </body>
     </html>
   );
