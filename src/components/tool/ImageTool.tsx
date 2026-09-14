@@ -188,11 +188,16 @@ export function ImageTool({
   /* ------------------------------------------------------------ workspace */
 
   return (
-    <div className="flex min-h-0 w-full max-w-5xl flex-1 flex-col items-center gap-4">
-      <div className="flex min-h-0 w-full flex-1 flex-col gap-4 animate-fade-in lg:flex-row">
+    <div className="flex w-full max-w-5xl flex-col items-center gap-4 lg:min-h-0 lg:flex-1">
+      <div className="flex w-full flex-col gap-4 animate-fade-in lg:min-h-0 lg:flex-1 lg:flex-row">
         {/* Preview column — flexible; absorbs whatever space the fixed-width
-            requirements panel leaves, and never scrolls. */}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
+            requirements panel leaves, and never scrolls. That "shrink to fit"
+            behaviour (min-h-0 + flex-1) is a desktop-only contract: below
+            `lg` the page is allowed to scroll (see ToolTemplate), so forcing
+            it here too just compressed this column below its content's real
+            height with nothing to clip the overflow — the content spilled
+            out and visually overlapped the requirements panel below it. */}
+        <div className="flex min-w-0 flex-col gap-3 lg:min-h-0 lg:flex-1">
           <div className="relative min-h-[180px] min-w-0 flex-1 lg:min-h-[90px]">
             {result && resultUrl && originalUrl ? (
               <CompareSlider
