@@ -134,7 +134,18 @@ export function ToolTemplate({ page, mode, copy: copyProp, preset, related }: Pr
 
       {/* ----------------------------------------------------- tool column */}
       <main id="main" className="flex min-h-0 flex-col overflow-y-auto px-5 py-4 sm:px-6 xl:overflow-hidden scroll-thin">
-        <div className="flex min-h-full flex-1 flex-col items-center justify-center gap-4">
+        {/* `justify-center` is a desktop-only nicety (gated to `lg:`): it
+            centers the empty/short state vertically when it fits in one
+            screen, exactly what "never scroll" wants. Below `lg`, content
+            (the bigger mobile preview especially) is now routinely taller
+            than the viewport by design — centering *taller-than-container*
+            flex content splits the overflow evenly above and below, pushing
+            the top of it behind the sticky header with no way to scroll up
+            far enough to reach it (min-h-full's min doesn't cap the max, so
+            this only shows up once content actually exceeds one screen).
+            Default (no justify-*) start-aligns instead, so any overflow is
+            only ever below the fold, where scrolling already reaches it. */}
+        <div className="flex min-h-full flex-1 flex-col items-center gap-4 lg:justify-center">
           <ImageTool mode={mode} hero={hero} preset={preset} />
           {/* Mobile/tablet ad slot — under the tool, never between the
               upload step and the result. */}
