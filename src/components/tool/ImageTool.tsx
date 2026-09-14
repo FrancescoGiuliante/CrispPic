@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, Download, ImageIcon, RotateCcw, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { useToast } from "@/components/ui/Toast";
 import { CompareSlider } from "@/components/tool/CompareSlider";
 import { CropModal } from "@/components/tool/CropModal";
@@ -198,7 +199,12 @@ export function ImageTool({
             height with nothing to clip the overflow — the content spilled
             out and visually overlapped the requirements panel below it. */}
         <div className="flex min-w-0 flex-col gap-3 lg:min-h-0 lg:flex-1">
-          <div className="relative min-h-[180px] min-w-0 flex-1 lg:min-h-[90px]">
+          {/* min-h-[50vh]: below `lg` there is no fixed-height budget to share
+              with anything else anymore (the sticky action cluster lives
+              outside the document flow, see below), so the preview is free
+              to take roughly half the screen instead of the old 180px floor
+              inherited from the desktop layout. */}
+          <div className="relative min-h-[50vh] min-w-0 flex-1 lg:min-h-[90px]">
             {result && resultUrl && originalUrl ? (
               <CompareSlider
                 beforeSrc={originalUrl}
@@ -240,7 +246,10 @@ export function ImageTool({
 
           {errorMessage && <ErrorNote message={errorMessage} />}
 
-          <div className="flex w-full shrink-0 gap-2.5">
+          {/* Desktop only — below `lg` the two actions move to the sticky
+              icon cluster underneath, reachable without scrolling back up
+              past the requirements panel. */}
+          <div className="hidden w-full shrink-0 gap-2.5 lg:flex">
             <Button onClick={download} disabled={!resultUrl || !result} block className="flex-1">
               <Download className="h-4 w-4" />
               {t("tool.download")}
@@ -259,6 +268,40 @@ export function ImageTool({
           order={config.order}
           onOpenCrop={() => setShowCrop(true)}
         />
+      </div>
+
+      {/* Mobile action cluster — icon-only, sticky rather than fixed: it
+          rides along at the bottom of the viewport for as long as you're
+          scrolling through this component (image + requirements panel), the
+          same "always reachable" feel as a native photo editor's toolbar,
+          but — because it is the last child inside this component's own box
+          rather than fixed to the whole viewport — it scrolls away with the
+          rest of this content the moment you pass it, exactly when
+          ToolTemplate's mobile ad slot begins. A true `fixed` cluster would
+          stay parked on screen over that ad forever, which we don't want.
+          `env(safe-area-inset-bottom)` keeps it clear of the home indicator
+          on notched phones. Hidden from `lg` up, where the inline buttons
+          above already do this job and the page never scrolls anyway. */}
+      <div className="sticky bottom-[calc(1rem+env(safe-area-inset-bottom))] z-10 flex w-full justify-end gap-2.5 lg:hidden">
+        <IconButton
+          label={t("tool.newImage")}
+          tooltip={false}
+          variant="outline"
+          onClick={startOver}
+          className="h-11 w-11 bg-surface/95 shadow-md backdrop-blur-sm"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </IconButton>
+        <IconButton
+          label={t("tool.download")}
+          tooltip={false}
+          variant="accent"
+          disabled={!resultUrl || !result}
+          onClick={download}
+          className="h-14 w-14 shadow-lg"
+        >
+          <Download className="h-6 w-6" />
+        </IconButton>
       </div>
 
       {/* Hidden anchor used to trigger the download without leaving the page. */}

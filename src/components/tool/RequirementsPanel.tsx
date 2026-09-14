@@ -2,9 +2,12 @@
 
 import {
   Crop as CropIcon,
+  FileImage,
   FlipHorizontal,
   FlipVertical,
   Lock,
+  Maximize2,
+  Minimize2,
   Pencil,
   RotateCcw,
   RotateCw,
@@ -12,6 +15,7 @@ import {
   TriangleAlert,
   Unlock,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { Switch } from "@/components/ui/Switch";
 import { Select } from "@/components/ui/Select";
@@ -70,11 +74,17 @@ export function RequirementsPanel({ params, patch, source, order, onOpenCrop }: 
 
 function SectionCard({
   title,
+  icon: Icon,
   hint,
   toggle,
   children,
 }: {
   title: string;
+  /** Small heading glyph — purely a scannability aid (app-like at a glance
+      on mobile, where these cards are now the whole screen rather than a
+      side rail), so it's `aria-hidden`: the label text already says
+      everything a screen reader needs. */
+  icon?: LucideIcon;
   hint?: string;
   toggle?: { checked: boolean; onChange: (v: boolean) => void };
   children?: React.ReactNode;
@@ -82,7 +92,10 @@ function SectionCard({
   return (
     <section className="flex flex-col gap-2.5 py-3 first:pt-3.5 last:pb-3.5">
       <div className="flex min-h-6 items-center justify-between gap-2">
-        <span className="text-[13px] font-semibold text-fg">{title}</span>
+        <span className="flex items-center gap-1.5 text-[13px] font-semibold text-fg">
+          {Icon && <Icon className="h-4 w-4 shrink-0 text-accent" aria-hidden />}
+          {title}
+        </span>
         {hint && !toggle && <span className="tabular text-[11px] text-fg-muted">{hint}</span>}
         {toggle && <Switch checked={toggle.checked} onChange={toggle.onChange} label={title} size="sm" />}
       </div>
@@ -132,6 +145,7 @@ function SizeCard({ params, patch }: { params: Params; patch: Props["patch"] }) 
   return (
     <SectionCard
       title={t("tool.maxFileSize")}
+      icon={Minimize2}
       toggle={{ checked: params.sizeEnabled, onChange: (v) => patch({ sizeEnabled: v }) }}
     >
       {params.sizeEnabled && (
@@ -225,7 +239,7 @@ function FormatCard({ params, patch, source }: { params: Params; patch: Props["p
   const losesAlpha = source?.hasAlpha && params.format !== "auto" && !formatSupportsAlpha(params.format);
 
   return (
-    <SectionCard title={t("tool.outputFormat")}>
+    <SectionCard title={t("tool.outputFormat")} icon={FileImage}>
       <div className="flex flex-col gap-2">
         <Segmented
           label={t("tool.outputFormat")}
@@ -296,6 +310,7 @@ function DimensionsCard({
   return (
     <SectionCard
       title={t("tool.dimensions")}
+      icon={Maximize2}
       toggle={{ checked: params.dimensionsEnabled, onChange: (v) => patch({ dimensionsEnabled: v }) }}
     >
       {params.dimensionsEnabled && (
@@ -404,7 +419,7 @@ function CropCard({ params, patch, onOpenCrop }: { params: Params; patch: Props[
   const { t } = useLanguage();
 
   return (
-    <SectionCard title={t("tool.crop")}>
+    <SectionCard title={t("tool.crop")} icon={CropIcon}>
       {params.crop ? (
         <div className="flex items-center justify-between gap-2 rounded-lg bg-accent-soft px-3 py-1.5">
           <span className="text-[13px] font-medium text-accent">
@@ -441,7 +456,7 @@ function TransformCard({ params, patch }: { params: Params; patch: Props["patch"
   const touched = params.rotate !== 0 || params.flipH || params.flipV;
 
   return (
-    <SectionCard title={t("tool.transform")} hint={params.rotate ? `${params.rotate}°` : undefined}>
+    <SectionCard title={t("tool.transform")} icon={RotateCw} hint={params.rotate ? `${params.rotate}°` : undefined}>
       <div className="flex items-center gap-1">
         <IconButton label={t("tool.rotateLeft")} variant="subtle" onClick={() => rotateBy(-90)}>
           <RotateCcw className="h-3.5 w-3.5" />
