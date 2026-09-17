@@ -281,14 +281,22 @@ export function ImageTool({
           stay parked on screen over that ad forever, which we don't want.
           `env(safe-area-inset-bottom)` keeps it clear of the home indicator
           on notched phones. Hidden from `lg` up, where the inline buttons
-          above already do this job and the page never scrolls anyway. */}
-      <div className="sticky bottom-[calc(1rem+env(safe-area-inset-bottom))] z-10 flex w-full justify-end gap-2.5 lg:hidden">
+          above already do this job and the page never scrolls anyway.
+
+          `pointer-events-none` on this wrapper is required, not decorative:
+          it is `w-full` so the sticky row's own box spans the whole width,
+          not just the two visible circles — without this, its transparent
+          left two-thirds would sit (via `sticky` + `z-10`) in front of
+          whatever requirements-panel content scrolls underneath it and
+          silently swallow every click/tap that lands there. Each button
+          opts back in with `pointer-events-auto` individually. */}
+      <div className="sticky bottom-[calc(1rem+env(safe-area-inset-bottom))] z-10 flex w-full justify-end gap-2.5 pointer-events-none lg:hidden">
         <IconButton
           label={t("tool.newImage")}
           tooltip={false}
           variant="outline"
           onClick={startOver}
-          className="h-11 w-11 bg-surface/95 shadow-md backdrop-blur-sm"
+          className="pointer-events-auto h-11 w-11 bg-surface/95 shadow-md backdrop-blur-sm"
         >
           <RotateCcw className="h-4 w-4" />
         </IconButton>
@@ -298,7 +306,7 @@ export function ImageTool({
           variant="accent"
           disabled={!resultUrl || !result}
           onClick={download}
-          className="h-14 w-14 shadow-lg"
+          className="pointer-events-auto h-14 w-14 shadow-lg"
         >
           <Download className="h-6 w-6" />
         </IconButton>
